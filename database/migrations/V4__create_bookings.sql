@@ -1,0 +1,28 @@
+-- V4__create_bookings.sql: Create bookings table with monetary precision and temporal indexes
+CREATE TABLE IF NOT EXISTS bookings (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    booking_reference VARCHAR(50) NOT NULL UNIQUE,
+    user_id BIGINT NOT NULL,
+    vehicle_id BIGINT NOT NULL,
+    start_datetime DATETIME NOT NULL,
+    end_datetime DATETIME NOT NULL,
+    total_days INT NOT NULL,
+    daily_rate_snapshot DECIMAL(12, 2) NOT NULL,
+    subtotal DECIMAL(12, 2) NOT NULL,
+    additional_fees DECIMAL(12, 2) NOT NULL DEFAULT 0.00,
+    total_amount DECIMAL(12, 2) NOT NULL,
+    currency VARCHAR(10) NOT NULL DEFAULT 'LKR',
+    booking_status VARCHAR(30) NOT NULL DEFAULT 'CONFIRMED',
+    payment_status VARCHAR(30) NOT NULL DEFAULT 'PAY_ON_PICKUP',
+    special_notes TEXT NULL,
+    cancellation_reason VARCHAR(500) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_bookings_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_bookings_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id),
+    INDEX idx_bookings_vehicle (vehicle_id),
+    INDEX idx_bookings_user (user_id),
+    INDEX idx_bookings_status (booking_status),
+    INDEX idx_bookings_dates (start_datetime, end_datetime)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
